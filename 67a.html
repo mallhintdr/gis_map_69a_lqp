@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIS Map of 67/A</title>
+
+    <!-- leaflet css  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Page styles css -->
+    <link rel="stylesheet" href="./CSS/styles.css">
+    <!-- location control css sheet  -->
+    <link href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.css" rel="stylesheet">
+
+ </head>
+<body>
+    <h5>Digital Map of Patwar Circle 69/A,Tehsil Liaqat Pur</h5>
+    <h5>Prepared by: Muhammad Masoom Mallhi 0304-8840264</h5>
+<hr>
+<div class="center-container">
+    <table>
+        <tr>
+            <td><a href="index.html">Chak 75/A</a></td>
+            <td><a href="36a.html">Chak 36/A</a></td>
+            <td><a href="67a.html">Chak 67/A</a></td>
+            <td><a href="68a.html">Chak 68/A</a></td>
+        </tr>
+        <tr>
+            <td><a href="69a.html">Chak 69/A</a></td>
+            <td><a href="76a.html">Chak 76/A</a></td>
+            <td><a href="77a.html">Chak 77/A</a></td>
+            <td><a href="78a.html">Chak 78/A</a></td>
+        </tr>
+    </table>
+</div>
+<hr>
+    <div id="map"></div>
+    <div class="labelstyle"></div>
+  
+</body>
+
+</html>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.79.0/dist/L.Control.Locate.min.js"></script>
+<script src="./JSON/c67.js"></script>
+<script src="./JSON/c67_mustateel.js"></script>
+
+<script>
+
+    var map = L.map('map').setView([28.633183 , 70.657369], 10); 
+
+ //Google hybrid
+
+var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3']
+    });
+googleHybrid.addTo(map)
+
+// location control
+
+var lc = L.control
+  .locate({
+    position: "topleft",
+    strings: {
+      title: "Show My Location on Map"
+    }
+  })
+  .addTo(map);
+
+let geoJsonLayer=L.geoJSON(c67, {
+    style: function() {
+        return {
+            fillColor: "#000000", // Black, but it will be transparent due to fillOpacity
+            fillOpacity: 0, // Transparent fill
+            color: "#ede88f", // Border color
+            weight: 1 // Border width
+        };
+    },
+    onEachFeature: function(feature, layer) {
+        if (feature.properties && feature.properties.Caption) {
+            layer.bindTooltip(feature.properties.Caption,{ permanent: true ,direction: 'center',className: 'labelstyle'}).openTooltip();
+        }
+    }
+}).addTo(map);
+
+let geoJsonLayer1=L.geoJSON(c67_mustateel, {
+    style: function() {
+        return {
+            fillColor: "#000000", // Black, but it will be transparent due to fillOpacity
+            fillOpacity: 0, // Transparent fill
+            color: "#c41919", // Border color
+            weight: 2 // Border width
+        };
+    },
+    onEachFeature: function(feature, layer) {
+        if (feature.properties && feature.properties.Caption) {
+            layer.bindTooltip(feature.properties.Caption,{ permanent: true ,direction: 'center',className: 'mustateel'}).openTooltip();
+        }
+    }
+}).addTo(map);
+
+var baseMaps={
+   // "Open Street Map":osm,
+    //"Khasra No":geoJsonLayer,
+    "Google Hybrid Map":googleHybrid
+
+};
+
+var overlayMaps={
+    "Khasra No":geoJsonLayer,
+    "Mustateel":geoJsonLayer1
+}
+
+L.control.layers(baseMaps,overlayMaps,{collapsed:false}).addTo(map);
+
+// Center the map to the GeoJSON layer
+let bounds = geoJsonLayer.getBounds();
+map.setView(bounds.getCenter());
+
+map.fitBounds(bounds);
+
+</script>
